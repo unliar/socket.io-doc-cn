@@ -50,8 +50,8 @@
         <ul id="posts">
           <li id="parent"><a href="/">概览</a></li>
           <li class="anchor"></li>
-          <li><a href="./server-api">服务端 API</a></li>
-          <li><a href="./client-api">客户端 API</a></li>
+          <li><a href="/server-api">服务端 API</a></li>
+          <li><a href="#">客户端 API</a></li>
           <li class="anchor"></li>
           <li><a href="./rooms-and-namespaces">群组 和命名空间</a></li>
           <li><a href="./migrating-from-0-9">从 0.9版本迁移</a></li>
@@ -132,12 +132,12 @@
               </h1>
 
               <h2 id="io">IO</h2>
-              <p>Exposed as the <code>io</code> namespace in the standalone build, or the result of calling <code>require(&#39;socket.io-client&#39;)</code>.</p>
+              <p> <code>io</code>在单独构建时被当作全局变量, 或者可以使用 <code>require(&#39;socket.io-client&#39;)</code>来引入.</p>
               <h3 id="io-protocol"><a class="icon-link deep-link" href="/docs/client-api#io-protocol" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>io.protocol</h3>
               <ul>
                 <li><em>(Number)</em></li>
               </ul>
-              <p>The protocol revision number.</p>
+              <p>协议的版本号.</p>
               <h3 id="io-url-options"><a class="icon-link deep-link" href="/docs/client-api#io-url-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>io(url[,
                 options])
               </h3>
@@ -146,12 +146,11 @@
                 <li><code>options</code> <em>(Object)</em></li>
                 <li><strong>Returns</strong> <code>Socket</code></li>
               </ul>
-              <p>Creates a new <code>Manager</code> for the given URL, and attempts to reuse an existing <code>Manager</code>                for subsequent calls, unless the <code>multiplex</code> option is passed with <code>false</code>. Passing
-                this option is the equivalent of passing <code>&#39;force new connection&#39;: true</code> or <code>forceNew: true</code>.</p>
-              <p>A new <code>Socket</code> instance is returned for the namespace specified by the pathname in the URL, defaulting
-                to <code>/</code>. For example, if the <code>url</code> is <code>http://localhost/users</code>, a transport
-                connection will be established to <code>http://localhost</code> and a Socket.IO connection will be established
-                to <code>/users</code>.</p>
+              <p>为传入的url创建一个新的 <code>Manager</code>, 并且为后来的调用尝试重用已经存在的<code>Manager</code> , 除非 <code>multiplex</code> 选项被传入了
+                <code>false</code>. 传入<code>&#39;force new connection&#39;: true</code> 或 <code>forceNew: true</code> 等价与<code>multiplex: false</code>.</p>
+              <p>根据你指定的url路径创建一个新的 <code>Socket</code> 实例, 默认 <code>/</code>. 例如, 如果 <code>url</code> 是 <code>http://localhost/users</code>,
+                一个传输通道会被建立在 <code>http://localhost</code> Socket.IO 连接在
+                <code>/users</code>.</p>
               <p>See <a href="#new-manager-url-options">new Manager(url[, options])</a> for available <code>options</code>.</p>
               <h2 id="manager">Manager</h2>
               <h3 id="new-manager-url-options"><a class="icon-link deep-link" href="/docs/client-api#new-manager-url-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>new
@@ -160,71 +159,65 @@
                 <li><code>url</code> <em>(String)</em></li>
                 <li><code>options</code> <em>(Object)</em>
                   <ul>
-                    <li><code>path</code> <em>(String)</em> name of the path that is captured on the server side (<code>/socket.io</code>)</li>
-                    <li><code>reconnection</code> <em>(Boolean)</em> whether to reconnect automatically (<code>true</code>)</li>
-                    <li><code>reconnectionAttempts</code> <em>(Number)</em> number of reconnection attempts before giving up
-                      (
+                    <li><code>path</code> <em>(String)</em> 被捕获的路径 (<code>/socket.io</code>)</li>
+                    <li><code>reconnection</code> <em>(Boolean)</em> 是否自动重连 (<code>true</code>)</li>
+                    <li><code>reconnectionAttempts</code> <em>(Number)</em> 重连次数 (
                       <code>Infinity</code>)</li>
-                    <li><code>reconnectionDelay</code> <em>(Number)</em> how long to initially wait before attempting a new<br>reconnection
-                      (
-                      <code>1000</code>). Affected by +/- <code>randomizationFactor</code>,<br>for example the default initial
-                      delay will be between 500 to 1500ms.</li>
-                    <li><code>reconnectionDelayMax</code> <em>(Number)</em> maximum amount of time to wait between<br>reconnections
-                      (
-                      <code>5000</code>). Each attempt increases the reconnection delay by 2x<br>along with a randomization
-                      as above</li>
+                    <li><code>reconnectionDelay</code> <em>(Number)</em><br> 重连间隔(
+                      <code>1000</code>). 会上下浮动 +/- <code>randomizationFactor</code>,<br>实际的延迟会在 500 到 1500ms上下.</li>
+                    <li><code>reconnectionDelayMax</code> <em>(Number)</em> 最大连接等待时间<br> (
+                      <code>5000</code>). 每次尝试会增加连接2倍的等待时间<br>会有一些上下浮动</li>
                     <li><code>randomizationFactor</code> <em>(Number)</em> (<code>0.5</code>), 0 &lt;= randomizationFactor &lt;=
                       1
                     </li>
-                    <li><code>timeout</code> <em>(Number)</em> connection timeout before a <code>connect_error</code><br>and
-                      <code>connect_timeout</code> events are emitted (<code>20000</code>)</li>
-                    <li><code>autoConnect</code> <em>(Boolean)</em> by setting this false, you have to call <code>manager.open</code><br>whenever
-                      you decide it&#39;s appropriate</li>
+                    <li><code>timeout</code> <em>(Number)</em> <code>connect_error</code><br>and
+                      <code>connect_timeout</code> 事件被激活的延迟时间 (<code>20000</code>)</li>
+                    <li><code>autoConnect</code> <em>(Boolean)</em> 设置值为false,你只能手动调用<code>manager.open</code><br></li>
                   </ul>
                 </li>
                 <li><strong>Returns</strong> <code>Manager</code></li>
               </ul>
-              <p>The <code>options</code> are also passed to <code>engine.io-client</code> upon initialization of the underlying
-                <code>Socket</code>. See the available <code>options</code> <a href="https://github.com/socketio/engine.io-client#methods">here</a>.</p>
+              <p>engine.io Server 创建时也有同样的选项
+                <code>Socket</code>. 请查看 <code>options</code> <a href="https://github.com/socketio/engine.io-client#methods">here</a>.</p>
               <h3 id="manager-reconnection-value"><a class="icon-link deep-link" href="/docs/client-api#manager-reconnection-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>manager.reconnection([value])</h3>
               <ul>
                 <li><code>value</code> <em>(Boolean)</em></li>
                 <li><strong>Returns</strong> <code>Manager|Boolean</code></li>
               </ul>
-              <p>Sets the <code>reconnection</code> option, or returns it if no parameters are passed.</p>
+              <p>设置 <code>reconnection</code> , 或者参数为空则返回<code>reconnection</code>的值 .</p>
               <h3 id="manager-reconnectionattempts-value"><a class="icon-link deep-link" href="/docs/client-api#manager-reconnectionattempts-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>manager.reconnectionAttempts([value])</h3>
               <ul>
                 <li><code>value</code> <em>(Number)</em></li>
                 <li><strong>Returns</strong> <code>Manager|Number</code></li>
               </ul>
-              <p>Sets the <code>reconnectionAttempts</code> option, or returns it if no parameters are passed.</p>
+              <p>设置 <code>reconnectionAttempts</code> , 参数为空则返回值.</p>
               <h3 id="manager-reconnectiondelay-value"><a class="icon-link deep-link" href="/docs/client-api#manager-reconnectiondelay-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>manager.reconnectionDelay([value])</h3>
               <ul>
                 <li><code>value</code> <em>(Number)</em></li>
                 <li><strong>Returns</strong> <code>Manager|Number</code></li>
               </ul>
-              <p>Sets the <code>reconnectionDelay</code> option, or returns it if no parameters are passed.</p>
+              <p>设置<code>reconnectionDelay</code> , 参数为空则返回值.</p>
               <h3 id="manager-reconnectiondelaymax-value"><a class="icon-link deep-link" href="/docs/client-api#manager-reconnectiondelaymax-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>manager.reconnectionDelayMax([value])</h3>
               <ul>
                 <li><code>value</code> <em>(Number)</em></li>
                 <li><strong>Returns</strong> <code>Manager|Number</code></li>
               </ul>
-              <p>Sets the <code>reconnectionDelayMax</code> option, or returns it if no parameters are passed.</p>
+              <p>设置 <code>reconnectionDelayMax</code> , 参数为空则返回值.</p>
               <h3 id="manager-timeout-value"><a class="icon-link deep-link" href="/docs/client-api#manager-timeout-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>manager.timeout([value])</h3>
               <ul>
                 <li><code>value</code> <em>(Number)</em></li>
                 <li><strong>Returns</strong> <code>Manager|Number</code></li>
               </ul>
-              <p>Sets the <code>timeout</code> option, or returns it if no parameters are passed.</p>
+              <p>设置 <code>timeout</code> , 参数为空则返回值.</p>
               <h3 id="manager-open-callback"><a class="icon-link deep-link" href="/docs/client-api#manager-open-callback" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>manager.open([callback])</h3>
               <ul>
                 <li><code>callback</code> <em>(Function)</em></li>
                 <li><strong>Returns</strong> <code>Manager</code></li>
               </ul>
-              <p>If the manager was initiated with <code>autoConnect</code> to <code>false</code>, launch a new connection attempt.</p>
-              <p>The <code>callback</code> argument is optional and will be called once the attempt fails/succeeds.</p>
+              <p>如果 manager初始化时<code>autoConnect</code> 为 <code>false</code>, 这个方法会尝试启用新连接.</p>
+              <p><code>callback</code> 可选，当连接成功或者失败时会被调用.</p>
               <h3 id="manager-connect-callback"><a class="icon-link deep-link" href="/docs/client-api#manager-connect-callback" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>manager.connect([callback])</h3>
-              <p>Synonym of <a href="#manageropencallback">manager.open([callback])</a>.</p>
+              <p>同义词： <a href="#manageropencallback">manager.open([callback])</a>.</p>
               <h3 id="manager-socket-nsp-options"><a class="icon-link deep-link" href="/docs/client-api#manager-socket-nsp-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>manager.socket(nsp,
                 options)
               </h3>
@@ -233,65 +226,64 @@
                 <li><code>options</code> <em>(Object)</em></li>
                 <li><strong>Returns</strong> <code>Socket</code></li>
               </ul>
-              <p>Creates a new <code>Socket</code> for the given namespace.</p>
+              <p>为给定的命名空间(namespace)创建一个<code>Socket</code> </p>
               <h3 id="event-connect_error"><a class="icon-link deep-link" href="/docs/client-api#event-connect_error" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;connect_error&#39;
               </h3>
               <ul>
                 <li><code>error</code> <em>(Object)</em> error object</li>
               </ul>
-              <p>Fired upon a connection error.</p>
+              <p>连接发生错误时被激活.</p>
               <h3 id="event-connect_timeout"><a class="icon-link deep-link" href="/docs/client-api#event-connect_timeout" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;connect_timeout&#39;
               </h3>
-              <p>Fired upon a connection timeout.</p>
+              <p>连接超时时被激活.</p>
               <h3 id="event-reconnect"><a class="icon-link deep-link" href="/docs/client-api#event-reconnect" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnect&#39;
               </h3>
               <ul>
-                <li><code>attempt</code> <em>(Number)</em> reconnection attempt number</li>
+                <li><code>attempt</code> <em>(Number)</em> 尝试重连次数</li>
               </ul>
-              <p>Fired upon a successful reconnection.</p>
+              <p>成功重连时被激活.</p>
               <h3 id="event-reconnect_attempt"><a class="icon-link deep-link" href="/docs/client-api#event-reconnect_attempt" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnect_attempt&#39;
               </h3>
-              <p>Fired upon an attempt to reconnect.</p>
+              <p>尝试重连时被激活.</p>
               <h3 id="event-reconnecting"><a class="icon-link deep-link" href="/docs/client-api#event-reconnecting" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnecting&#39;
               </h3>
               <ul>
-                <li><code>attempt</code> <em>(Number)</em> reconnection attempt number</li>
+                <li><code>attempt</code> <em>(Number)</em> 重连次数</li>
               </ul>
-              <p>Fired upon a successful reconnection.</p>
+              <p>成功重连时被激活.</p>
               <h3 id="event-reconnect_error"><a class="icon-link deep-link" href="/docs/client-api#event-reconnect_error" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnect_error&#39;
               </h3>
               <ul>
                 <li><code>error</code> <em>(Object)</em> error object</li>
               </ul>
-              <p>Fired upon a reconnection attempt error.</p>
+              <p>尝试重连发生错误时被激活.</p>
               <h3 id="event-reconnect_failed"><a class="icon-link deep-link" href="/docs/client-api#event-reconnect_failed" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnect_failed&#39;
               </h3>
-              <p>Fired when couldn&#39;t reconnect within <code>reconnectionAttempts</code>.</p>
+              <p>重连次数达到 <code>reconnectionAttempts</code>的值时被激活.</p>
               <h3 id="event-ping"><a class="icon-link deep-link" href="/docs/client-api#event-ping" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;ping&#39;
               </h3>
-              <p>Fired when a ping packet is written out to the server.</p>
+              <p>当ping包被发给服务器时被激活.</p>
               <h3 id="event-pong"><a class="icon-link deep-link" href="/docs/client-api#event-pong" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;pong&#39;
               </h3>
               <ul>
-                <li><code>ms</code> <em>(Number)</em> number of ms elapsed since <code>ping</code> packet (i.e.: latency).</li>
+                <li><code>ms</code> <em>(Number)</em> 响应 <code>ping</code> 的时间 (i.e.: latency).</li>
               </ul>
-              <p>Fired when a pong is received from the server.</p>
+              <p>当收到服务器对ping的响应时.</p>
               <h2 id="socket">Socket</h2>
               <h3 id="socket-id"><a class="icon-link deep-link" href="/docs/client-api#socket-id" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.id</h3>
               <ul>
                 <li><em>(String)</em></li>
               </ul>
-              <p>An unique identifier for the socket session. Set after the <code>connect</code> event is triggered, and updated
-                after the <code>reconnect</code> event.</p>
+              <p>一个独一无二的会话标识. 当<code>connect</code> 事件触发后被设置, <code>reconnect</code> 触发后更新.</p>
               <pre><code class="lang-js">var socket = io(&#39;http://localhost&#39;);
 
 console.log(socket.id); // undefined
@@ -304,9 +296,9 @@ socket.on(&#39;connect&#39;, function(){
               <ul>
                 <li><strong>Returns</strong> <code>Socket</code></li>
               </ul>
-              <p>Opens the socket.</p>
+              <p>开启 socket.</p>
               <h3 id="socket-connect"><a class="icon-link deep-link" href="/docs/client-api#socket-connect" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.connect()</h3>
-              <p>Synonym of <a href="#socketopen">socket.open()</a>.</p>
+              <p>同义词：<a href="#socketopen">socket.open()</a>.</p>
               <h3 id="socket-send-args-ack"><a class="icon-link deep-link" href="/docs/client-api#socket-send-args-ack" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.send([...args][,
                 ack])
               </h3>
@@ -315,7 +307,7 @@ socket.on(&#39;connect&#39;, function(){
                 <li><code>ack</code> <em>(Function)</em></li>
                 <li><strong>Returns</strong> <code>Socket</code></li>
               </ul>
-              <p>Sends a <code>message</code> event. See <a href="#socket-emit-eventname-args-ack">socket.emit(eventName[, ...args][, ack])</a>.</p>
+              <p>发送(激活)一个 <code>message</code> 事件. 查看 <a href="#socket-emit-eventname-args-ack">socket.emit(eventName[, ...args][, ack])</a>.</p>
               <h3 id="socket-emit-eventname-args-ack"><a class="icon-link deep-link" href="/docs/client-api#socket-emit-eventname-args-ack" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.emit(eventName[,
                 ...args][, ack])</h3>
               <ul>
@@ -324,12 +316,11 @@ socket.on(&#39;connect&#39;, function(){
                 <li><code>ack</code> <em>(Function)</em></li>
                 <li><strong>Returns</strong> <code>Socket</code></li>
               </ul>
-              <p>Emits an event to the socket identified by the string name. Any other parameters can be included. All serializable
-                datastructures are supported, including <code>Buffer</code>.</p>
+              <p>激活(发送)一个指定的事件，另外的参数也会被一同发送, 所有数据结构都能被支持，包括 <code>Buffer</code>.</p>
               <pre><code class="lang-js">socket.emit(&#39;hello&#39;, &#39;world&#39;);
 socket.emit(&#39;with-binary&#39;, 1, &#39;2&#39;, { 3: &#39;4&#39;, 5: new Buffer(6) });
 </code></pre>
-              <p>The <code>ack</code> argument is optional and will be called with the server answer.</p>
+              <p><code>ack</code> 是一个可选参数，当客户端响应时会被调用.</p>
               <pre><code class="lang-js">socket.emit(&#39;ferret&#39;, &#39;tobi&#39;, function (data) {
   console.log(data); // data will be &#39;woot&#39;
 });
@@ -349,86 +340,86 @@ socket.emit(&#39;with-binary&#39;, 1, &#39;2&#39;, { 3: &#39;4&#39;, 5: new Buff
                 <li><code>callback</code> <em>(Function)</em></li>
                 <li><strong>Returns</strong> <code>Socket</code></li>
               </ul>
-              <p>Register a new handler for the given event.</p>
+              <p>为指定的事件创建一个handler.</p>
               <pre><code class="lang-js">socket.on(&#39;news&#39;, function (data) {
   console.log(data);
 });
 </code></pre>
-              <p>The socket actually inherits every method of the <a href="https://github.com/component/emitter">Emitter</a>                class, like <code>hasListeners</code>, <code>once</code> or <code>off</code> (to remove an event listener).</p>
+              <p>socket 实际上继承了 每个 <a href="https://github.com/component/emitter">Emitter</a> 事件, 类似于 <code>hasListeners</code>,
+                <code>once</code> 或 <code>off</code> (用于移除事件监听).</p>
               <h3 id="socket-compress-value"><a class="icon-link deep-link" href="/docs/client-api#socket-compress-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.compress(value)</h3>
               <ul>
                 <li><code>value</code> <em>(Boolean)</em></li>
                 <li><strong>Returns</strong> <code>Socket</code></li>
               </ul>
-              <p>Sets a modifier for a subsequent event emission that the event data will only be <em>compressed</em> if the
-                value is <code>true</code>. Defaults to <code>true</code> when you don&#39;t call the method.</p>
+              <p>设置一个附加标识给发送(激活)事件，来表明这个事件的数据仅当value为true时会被压缩 <em>compressed</em>.默认 <code>true</code></p>
               <pre><code class="lang-js">socket.compress(false).emit(&#39;an event&#39;, { some: &#39;data&#39; });
 </code></pre>
               <h3 id="socket-close"><a class="icon-link deep-link" href="/docs/client-api#socket-close" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.close()</h3>
               <ul>
                 <li><strong>Returns</strong> <code>Socket</code></li>
               </ul>
-              <p>Disconnects the socket manually.</p>
+              <p>手动断开socket连接.</p>
               <h3 id="socket-disconnect"><a class="icon-link deep-link" href="/docs/client-api#socket-disconnect" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.disconnect()</h3>
               <p>Synonym of <a href="#socketclose">socket.close()</a>.</p>
               <h3 id="event-connect"><a class="icon-link deep-link" href="/docs/client-api#event-connect" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;connect&#39;
               </h3>
-              <p>Fired upon a connection including a successful reconnection.</p>
+              <p>成功连接或者成功重连时被激活.</p>
               <h3 id="event-connect_error-1"><a class="icon-link deep-link" href="/docs/client-api#event-connect_error-1" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;connect_error&#39;
               </h3>
               <ul>
                 <li><code>error</code> <em>(Object)</em> error object</li>
               </ul>
-              <p>Fired upon a connection error.</p>
+              <p>连接发生错误时被激活.</p>
               <h3 id="event-connect_timeout-1"><a class="icon-link deep-link" href="/docs/client-api#event-connect_timeout-1" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;connect_timeout&#39;
               </h3>
-              <p>Fired upon a connection timeout.</p>
+              <p>连接超时时被激活.</p>
               <h3 id="event-error"><a class="icon-link deep-link" href="/docs/client-api#event-error" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;error&#39;
               </h3>
               <ul>
                 <li><code>error</code> <em>(Object)</em> error object</li>
               </ul>
-              <p>Fired when an error occurs.</p>
+              <p>发生了错误时被激活.</p>
               <h3 id="event-disconnect"><a class="icon-link deep-link" href="/docs/client-api#event-disconnect" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;disconnect&#39;
               </h3>
-              <p>Fired upon a disconnection.</p>
+              <p>断开连接时被激活.</p>
               <h3 id="event-reconnect-1"><a class="icon-link deep-link" href="/docs/client-api#event-reconnect-1" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnect&#39;
               </h3>
               <ul>
                 <li><code>attempt</code> <em>(Number)</em> reconnection attempt number</li>
               </ul>
-              <p>Fired upon a successful reconnection.</p>
+              <p>成功重连时被激活.</p>
               <h3 id="event-reconnect_attempt-1"><a class="icon-link deep-link" href="/docs/client-api#event-reconnect_attempt-1" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnect_attempt&#39;
               </h3>
               <ul>
                 <li><code>attempt</code> <em>(Number)</em> reconnection attempt number</li>
               </ul>
-              <p>Fired upon an attempt to reconnect.</p>
+              <p>尝试重连时被激活.</p>
               <h3 id="event-reconnecting-1"><a class="icon-link deep-link" href="/docs/client-api#event-reconnecting-1" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnecting&#39;
               </h3>
               <ul>
                 <li><code>attempt</code> <em>(Number)</em> reconnection attempt number</li>
               </ul>
-              <p>Fired upon an attempt to reconnect.</p>
+              <p>尝试重连时被激活.</p>
               <h3 id="event-reconnect_error-1"><a class="icon-link deep-link" href="/docs/client-api#event-reconnect_error-1" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnect_error&#39;
               </h3>
               <ul>
                 <li><code>error</code> <em>(Object)</em> error object</li>
               </ul>
-              <p>Fired upon a reconnection attempt error.</p>
+              <p>尝试重连失败时被激活.</p>
               <h3 id="event-reconnect_failed-1"><a class="icon-link deep-link" href="/docs/client-api#event-reconnect_failed-1" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
                 &#39;reconnect_failed&#39;
               </h3>
-              <p>Fired when couldn&#39;t reconnect within <code>reconnectionAttempts</code>.</p>
+              <p>当重连达到 <code>reconnectionAttempts</code>设置的次数时被激活.</p>
 
             </div>
             <!-- .entry-content -->
@@ -465,7 +456,9 @@ socket.emit(&#39;with-binary&#39;, 1, &#39;2&#39;, { 3: &#39;4&#39;, 5: new Buff
   </script>
 
   <script src="js/default.min.js"></script>
-
+  <script>
+    console.log(io.protocol);
+  </script>
 </body>
 
 </html>
