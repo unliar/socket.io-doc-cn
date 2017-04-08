@@ -1,0 +1,680 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-site-verification" content="6hwSNwrfOBp3YhFBHWy08L12QeMTLpqNI3LvIB4lZEI" />
+  <title>Socket.IO — Server API</title>
+  <link href='css/030cca686f2b4866929ad2bcf920b567.css' rel='stylesheet' type='text/css'>
+
+  <link rel='stylesheet' id='socket-io-website-style-css' href='css/style.css' type='text/css' media='all' />
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18488944-1']);
+    _gaq.push(['_trackPageview']);
+    (function () {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+</head>
+
+<body class="blog group-blog">
+  <div id="bar"></div>
+  <div id="page" class="hfeed site">
+
+    <header id="masthead" class="site-header" role="banner">
+      <div class="site-branding">
+        <h1 class="site-title">
+          <a href="/" rel="home"></a>
+        </h1>
+        <h2 class="site-description"></h2>
+      </div>
+
+      <nav id="site-navigation" class="main-navigation" role="navigation">
+        <div id="logo-container"><a href="/" id="logo">socket.io</a></div>
+        <div class="menu-menu-container">
+
+          <ul id="menu-menu" class="menu">
+            <li id="menu-item-6" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-6"><a href="/">首页</a></li>
+            <li id="menu-item-153" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-153"><a href="/demos/chat/">示例</a></li>
+            <li id="menu-item-30" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-30"><a href="/get-started">开始使用</a></li>
+            <li id="menu-item-29" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-29"><a href="/">文档</a></li>
+            <!-- <li id="menu-item-95" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-95"><a href="http://socket.io/blog/">Blog</a></li> -->
+            <li id="menu-item-43" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-43"><a href="https://cdnjs.com/libraries/socket.io">下载 v1.7.3</a></li>
+            <li id="menu-item-972" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-972"><a href="https://slackin-socketio.now.sh/">加入交流区</a></li>
+          </ul>
+        </div>
+        <iframe src="https://ghbtns.com/github-btn.html?user=socketio&repo=socket.io&type=watch&count=true" allowtransparency="true"
+          frameborder="0" scrolling="0" width="120" id="gh-watchers" height="20"></iframe>
+      </nav>
+      <!-- #site-navigation -->
+    </header>
+    <!-- #masthead -->
+
+    <div id="content" class="site-content">
+
+      <div class="sidebar" class="content-area">
+        <ul id="posts">
+          <li id="parent"><a href="/">概览</a></li>
+          <li class="anchor"></li>
+          <li><a href="/server-api/">服务端 API</a></li>
+          <li><a href="/client-api/">客户端 API</a></li>
+          <li class="anchor"></li>
+          <li><a href="/rooms-and-namespaces/">群组 和命名空间</a></li>
+          <li><a href="/migrating-from-0-9/">从 0.9版本迁移</a></li>
+          <li><a href="/using-multiple-nodes/">使用多个Node服务</a></li>
+          <li><a href="/logging-and-debugging/">日志和Debug</a></li>
+          <li><a href="/emit-cheatsheet/">发送消息示例</a></li>
+          <li><a href="/faq/">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar sidebar-right">
+        <ul>
+          <li>
+            <a class="navigation-class" href="#server">Class: Server</a>
+            <ul class="class-details">
+              <li><a href="#new-server-httpserver-options">new Server(httpServer[, options])</a></li>
+              <li><a href="#new-server-port-options">new Server(port[, options])</a></li>
+              <li><a href="#new-server-options">new Server(options)</a></li>
+              <li><a href="#server-sockets">server.sockets</a></li>
+              <li><a href="#server-serveclient-value">server.serveClient([value])</a></li>
+              <li><a href="#server-path-value">server.path([value])</a></li>
+              <li><a href="#server-adapter-value">server.adapter([value])</a></li>
+              <li><a href="#server-origins-value">server.origins([value])</a></li>
+              <li><a href="#server-origins-fn">server.origins(fn)</a></li>
+              <li><a href="#server-attach-httpserver-options">server.attach(httpServer[, options])</a></li>
+              <li><a href="#server-attach-port-options">server.attach(port[, options])</a></li>
+              <li><a href="#server-listen-httpserver-options">server.listen(httpServer[, options])</a></li>
+              <li><a href="#server-listen-port-options">server.listen(port[, options])</a></li>
+              <li><a href="#server-bind-engine">server.bind(engine)</a></li>
+              <li><a href="#server-onconnection-socket">server.onconnection(socket)</a></li>
+              <li><a href="#server-of-nsp">server.of(nsp)</a></li>
+              <li><a href="#server-close-callback">server.close([callback])</a></li>
+            </ul>
+            <li>
+              <li>
+                <a class="navigation-class" href="#namespace">Class: Namespace</a>
+                <ul class="class-details hidden">
+                  <li><a href="#namespace-name">namespace.name</a></li>
+                  <li><a href="#namespace-connected">namespace.connected</a></li>
+                  <li><a href="#namespace-emit-eventname-args">namespace.emit(eventName[, ...args])</a></li>
+                  <li><a href="#namespace-clients-callback">namespace.clients(callback)</a></li>
+                  <li><a href="#namespace-use-fn">namespace.use(fn)</a></li>
+                  <li><a href="#event-connect">Event: &#39;connect&#39;</a></li>
+                  <li><a href="#event-connection">Event: &#39;connection&#39;</a></li>
+                  <li><a href="#flag-volatile">Flag: &#39;volatile&#39;</a></li>
+                  <li><a href="#flag-local">Flag: &#39;local&#39;</a></li>
+                </ul>
+                <li>
+                  <li>
+                    <a class="navigation-class" href="#socket">Class: Socket</a>
+                    <ul class="class-details hidden">
+                      <li><a href="#socket-id">socket.id</a></li>
+                      <li><a href="#socket-rooms">socket.rooms</a></li>
+                      <li><a href="#socket-client">socket.client</a></li>
+                      <li><a href="#socket-conn">socket.conn</a></li>
+                      <li><a href="#socket-request">socket.request</a></li>
+                      <li><a href="#socket-use-fn">socket.use(fn)</a></li>
+                      <li><a href="#socket-send-args-ack">socket.send([...args][, ack])</a></li>
+                      <li><a href="#socket-emit-eventname-args-ack">socket.emit(eventName[, ...args][, ack])</a></li>
+                      <li><a href="#socket-on-eventname-callback">socket.on(eventName, callback)</a></li>
+                      <li><a href="#socket-join-room-callback">socket.join(room[, callback])</a></li>
+                      <li><a href="#socket-join-rooms-callback">socket.join(rooms[, callback])</a></li>
+                      <li><a href="#socket-leave-room-callback">socket.leave(room[, callback])</a></li>
+                      <li><a href="#socket-to-room">socket.to(room)</a></li>
+                      <li><a href="#socket-in-room">socket.in(room)</a></li>
+                      <li><a href="#socket-compress-value">socket.compress(value)</a></li>
+                      <li><a href="#socket-disconnect-close">socket.disconnect(close)</a></li>
+                      <li><a href="#flag-broadcast">Flag: &#39;broadcast&#39;</a></li>
+                      <li><a href="#flag-volatile-1">Flag: &#39;volatile&#39;</a></li>
+                      <li><a href="#event-disconnect">Event: &#39;disconnect&#39;</a></li>
+                      <li><a href="#event-error">Event: &#39;error&#39;</a></li>
+                      <li><a href="#event-disconnecting">Event: &#39;disconnecting&#39;</a></li>
+                    </ul>
+                    <li>
+                      <li>
+                        <a class="navigation-class" href="#client">Class: Client</a>
+                        <ul class="class-details hidden">
+                          <li><a href="#client-conn">client.conn</a></li>
+                          <li><a href="#client-request">client.request</a></li>
+                        </ul>
+                        <li>
+        </ul>
+      </div>
+
+      <div id="primary" class="content-area with-sidebar">
+
+        <main id="main" class="site-main" role="main">
+
+          <article id="post-74" class="post-74 page type-page status-publish hentry">
+            <div class="entry-content">
+              <h1 id="server-api"><a class="icon-link deep-link" href="/docs/server-api/#server-api" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>服务端
+                API
+              </h1>
+
+              <h2 id="server">Server</h2>
+              <p>由 <code>require(&#39;socket.io&#39;)</code>暴露.</p>
+              <h3 id="new-server-httpserver-options"><a class="icon-link deep-link" href="/docs/server-api/#new-server-httpserver-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>new
+                Server(httpServer[, options])</h3>
+              <ul>
+                <li><code>httpServer</code> <em>(http.Server)</em> 绑定的http服务器.</li>
+                <li><code>options</code> <em>(对象)</em>
+                  <ul>
+                    <li><code>path</code> <em>(字符串)</em>: 被捕获的路径 (<code>/socket.io</code>)</li>
+                    <li><code>serveClient</code> <em>(布尔值)</em>: 是否serve客户端文件 (<code>true</code>)</li>
+                    <li><code>adapter</code> <em>(Adapter)</em>: 使用的适配器. 默认是socket.io-adater 的一个实例， 查看<a href="https://github.com/socketio/socket.io-adapter">socket.io-adapter</a></li>
+                    <li><code>origins</code> <em>(字符串)</em>: 默认 (<code>*</code>)</li>
+                    <li><code>allowRequest</code> <em>(函数)</em>: 一个接收握手或者更新请求作为第一个参数，能够决定是否继续,第二个参数是一个回调函数: <code>fn(err, success)</code>,
+                      <code>success</code> 是一个布尔值，false意味着请求失败, err是一个错误码.</li>
+                    <li><code>parser</code> <em>(Parser)</em>: 使用的解析. 默认是 socket.io-parse的实例. 查看 <a href="https://github.com/socketio/socket.io-parser">socket.io-parser</a>.</li>
+                  </ul>
+                </li>
+              </ul>
+              <p>不使用 <code>new</code>:</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+// or
+var Server = require(&#39;socket.io&#39;);
+var io = new Server();
+</code></pre>
+              <p> <code>engine.io</code> <code>Server</code> 创建时也有同样的选项 . 查看 <a href="https://github.com/socketio/engine.io#methods-1">options</a>                作为参考.</p>
+              <p>下列选项:</p>
+              <ul>
+                <li><code>pingTimeout</code> <em>(数字)</em>: 多少ms ping超时，默认 (<code>60000</code>)</li>
+                <li><code>pingInterval</code> <em>(Number)</em>: 发送一个ping的间隔 (<code>25000</code>).</li>
+              </ul>
+              <p>这些参数会影响客户端获悉服务器服务不可用的延时,例如, 如果 TCP 由于网络问题未被正确的关闭, 客户端可能在得到错误码之前不得不等上
+                <code>pingTimeout + pingInterval</code> ms</p>
+              <ul>
+                <li><code>transports</code> <em>(Array&lt;String&gt;)</em>: 允许的传输方式 (<code>[&#39;polling&#39;, &#39;websocket&#39;]</code>).</li>
+              </ul>
+              <p><strong>Note:</strong> 这个规则很重要. 默认情况下,先建立长轮询，如果websocket可用，则升级为Websock。 使用 <code>[&#39;websocket&#39;]</code>意味着如果websocket不可用,就不会有备用选择.</p>
+              <h3 id="new-server-port-options"><a class="icon-link deep-link" href="/docs/server-api/#new-server-port-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>new
+                Server(port[, options])</h3>
+              <ul>
+                <li><code>port</code> <em>(Number)</em> 监听的端口 (a new <code>http.Server</code> will be created)</li>
+                <li><code>options</code> <em>(Object)</em></li>
+              </ul>
+              <p>查看 <a href="#new-server-httpserver-options">可选配置</a> .</p>
+              <h3 id="new-server-options"><a class="icon-link deep-link" href="/docs/server-api/#new-server-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>new
+                Server(options)
+              </h3>
+              <ul>
+                <li><code>options</code> <em>(Object)</em></li>
+              </ul>
+              <p>查看<a href="#new-server-httpserver-options">可选配置</a> .</p>
+              <h3 id="server-sockets"><a class="icon-link deep-link" href="/docs/server-api/#server-sockets" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.sockets</h3>
+              <ul>
+                <li><em>(Namespace)</em></li>
+              </ul>
+              <p>默认 (<code>/</code>) .</p>
+              <h3 id="server-serveclient-value"><a class="icon-link deep-link" href="/docs/server-api/#server-serveclient-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.serveClient([value])</h3>
+              <ul>
+                <li><code>value</code> <em>(Boolean)</em></li>
+                <li><strong>Returns</strong> <code>Server|Boolean</code></li>
+              </ul>
+              <p>如果 <code>value</code> 是 <code>true</code>， 附属的服务器 (see <code>Server#attach</code>) 会提供文件服务. 默认 <code>true</code>.
+                这个方法在服务器启动后配置无法产生效果. 如果没有提供参数,这个方法就会返回当前的值。</p>
+              <pre><code class="lang-js">// 提供 serveClient 配置
+var io = require(&#39;socket.io&#39;)(http, { serveClient: false });
+
+// 或者调用方法进行配置
+var io = require(&#39;socket.io&#39;)();
+io.serveClient(false);
+io.attach(http);
+</code></pre>
+              <h3 id="server-path-value"><a class="icon-link deep-link" href="/docs/server-api/#server-path-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.path([value])</h3>
+              <ul>
+                <li><code>value</code> <em>(String)</em></li>
+                <li><strong>Returns</strong> <code>Server|String</code></li>
+              </ul>
+              <p>设置静态资源目录为 <code>value</code> 这个目录下的文件能被访问. 默认是
+                <code>/socket.io</code>. 如果没有提供参数,这个方法就会返回当前的值。</p>
+              <h3 id="server-adapter-value"><a class="icon-link deep-link" href="/docs/server-api/#server-adapter-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.adapter([value])</h3>
+              <ul>
+                <li><code>value</code> <em>(Adapter)</em></li>
+                <li><strong>Returns</strong> <code>Server|Adapter</code></li>
+              </ul>
+              <p>设置adapter <code>value</code>. 默认是<code>Adapter</code>的实例 . 查看 <a href="https://github.com/socketio/socket.io-adapter">socket.io-adapter</a>.
+                如果没有提供参数,这个方法就会返回当前的值。
+              </p>
+              <h3 id="server-origins-value"><a class="icon-link deep-link" href="/docs/server-api/#server-origins-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.origins([value])</h3>
+              <ul>
+                <li><code>value</code> <em>(String)</em></li>
+                <li><strong>Returns</strong> <code>Server|String</code></li>
+              </ul>
+              <p>设置允许的 origins <code>value</code>值. 默认为'*'. 如果没有提供参数,这个方法就会返回当前的值。.</p>
+              <h3 id="server-origins-fn"><a class="icon-link deep-link" href="/docs/server-api/#server-origins-fn" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.origins(fn)</h3>
+              <ul>
+                <li><code>fn</code> <em>(Function)</em></li>
+                <li><strong>Returns</strong> <code>Server</code></li>
+              </ul>
+              <p>提供一个接收俩个参数的函数 <code>origin:String</code> and <code>callback(error, success)</code>,
+                <code>success</code> 用于显示origin是否被允许访问.</p>
+              <p><strong>Potential drawbacks</strong>:</p>
+              <ul>
+                <li>在某些情况下, 当你没有配置 <code>origin</code> 值可能是 <code>*</code></li>
+                <li>当这个函数被注入到每个请求时,建议不需要配置，以使得请求尽可能快</li>
+                <li>如果 <code>socket.io</code> 和<code>Express</code>一同使用, CORS设置的请求头仅仅会影响
+                  <code>socket.io</code> 请求. Express能使用这个模块 <a href="https://github.com/expressjs/cors">cors</a>.</li>
+              </ul>
+              <h3 id="server-attach-httpserver-options"><a class="icon-link deep-link" href="/docs/server-api/#server-attach-httpserver-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.attach(httpServer[,
+                options])
+              </h3>
+              <ul>
+                <li><code>httpServer</code> <em>(http.Server)</em> 附加到的服务器名字</li>
+                <li><code>options</code> <em>(Object)</em></li>
+              </ul>
+              <p>把 engine.io<code>Server</code> 附加到(options)提供的httpServer上</code>(可选).</p>
+              <h3 id="server-attach-port-options"><a class="icon-link deep-link" href="/docs/server-api/#server-attach-port-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.attach(port[,
+                options])
+              </h3>
+              <ul>
+                <li><code>port</code> <em>(Number)</em> 监听的端口</li>
+                <li><code>options</code> <em>(Object)</em></li>
+              </ul>
+              <p>把 engine.io<code>Server</code> 附加到(options)提供的httpServer上</code>(可选).</p>
+              <h3 id="server-listen-httpserver-options"><a class="icon-link deep-link" href="/docs/server-api/#server-listen-httpserver-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.listen(httpServer[,
+                options])
+              </h3>
+              <p>同义<a href="#serverattachhttpserver-options">server.attach(httpServer[, options])</a>.</p>
+              <h3 id="server-listen-port-options"><a class="icon-link deep-link" href="/docs/server-api/#server-listen-port-options" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.listen(port[,
+                options])
+              </h3>
+              <p>同义 <a href="#serverattachport-options">server.attach(port[, options])</a>.</p>
+              <h3 id="server-bind-engine"><a class="icon-link deep-link" href="/docs/server-api/#server-bind-engine" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.bind(engine)</h3>
+              <ul>
+                <li><code>engine</code> <em>(engine.Server)</em></li>
+                <li><strong>Returns</strong> <code>Server</code></li>
+              </ul>
+              <p>高级用法. 绑定服务端到一个engine.io <code>Server</code> (or compatible API) 实例.</p>
+              <h3 id="server-onconnection-socket"><a class="icon-link deep-link" href="/docs/server-api/#server-onconnection-socket" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.onconnection(socket)</h3>
+              <ul>
+                <li><code>socket</code> <em>(engine.Socket)</em></li>
+                <li><strong>Returns</strong> <code>Server</code></li>
+              </ul>
+              <p>高级用法. 从engine.io(compatible API) <code>Socket</code>或者 创建一个新的 <code>socket.io</code> 客户端 .
+              </p>
+              <h3 id="server-of-nsp"><a class="icon-link deep-link" href="/docs/server-api/#server-of-nsp" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.of(nsp)</h3>
+              <ul>
+                <li><code>nsp</code> <em>(String)</em></li>
+                <li><strong>Returns</strong> <code>Namespace</code></li>
+              </ul>
+              <p>通过给定的<code>nsp</code>初始化并且检索<code>Namespace</code> . 如果<code>Namespace</code>存在，则立即返回当前它.</p>
+              <h3 id="server-close-callback"><a class="icon-link deep-link" href="/docs/server-api/#server-close-callback" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>server.close([callback])</h3>
+              <ul>
+                <li><code>callback</code> <em>(Function)</em></li>
+              </ul>
+              <p>关闭 socket.io服务. <code>callback</code> 是可选项，当所有socket.io关闭时，会被调用</p>
+              <pre><code class="lang-js">var Server = require(&#39;socket.io&#39;);
+var PORT   = 3030;
+var server = require(&#39;http&#39;).Server();
+
+var io = Server(PORT);
+
+io.close(); // Close current server
+
+server.listen(PORT); // PORT is free to use
+
+io = Server(server);
+</code></pre>
+              <h2 id="namespace">Namespace</h2>
+              <p>代表一个通过路径名制定的socket连接池<br>by a pathname (eg: <code>/chat</code>).</p>
+              <p>默认 <code>/</code>.</p>
+              <h3 id="namespace-name"><a class="icon-link deep-link" href="/docs/server-api/#namespace-name" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>namespace.name</h3>
+              <ul>
+                <li><em>(String)</em></li>
+              </ul>
+              <p>namespace identifier property.</p>
+              <h3 id="namespace-connected"><a class="icon-link deep-link" href="/docs/server-api/#namespace-connected" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>namespace.connected</h3>
+              <ul>
+                <li><em>(Object&lt;Socket&gt;)</em></li>
+              </ul>
+              <p> 链接到当前namespace的socket对象的hash值, 由 <code>id</code>索引.</p>
+              <h3 id="namespace-emit-eventname-args"><a class="icon-link deep-link" href="/docs/server-api/#namespace-emit-eventname-args" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>namespace.emit(eventName[,
+                ...args])
+              </h3>
+              <ul>
+                <li><code>eventName</code> <em>(String)</em></li>
+                <li><code>args</code></li>
+              </ul>
+              <p>发送消息给所有已连接用户,下面两个实例实现了相同的效果:</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+
+io.emit(&#39;an event sent to all connected clients&#39;); // main namespace
+
+var chat = io.of(&#39;/chat&#39;);
+chat.emit(&#39;an event sent to all connected clients in chat namespace&#39;);
+</code></pre>
+              <h3 id="namespace-clients-callback"><a class="icon-link deep-link" href="/docs/server-api/#namespace-clients-callback" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>namespace.clients(callback)</h3>
+              <ul>
+                <li><code>callback</code> <em>(Function)</em></li>
+              </ul>
+              <p>获取链接到当前Namespace的所有客户端ID列表 (across all nodes if applicable).</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.of(&#39;/chat&#39;).clients(function(error, clients){
+  if (error) throw error;
+  console.log(clients); // =&gt; [PZDoMHjiu8PYfRiKAAAF, Anw2LatarvGVVXEIAAAD]
+});
+</code></pre>
+              <p>一个获取所有连接到当前Namespace的某个room的客户端ID列表示例:</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.of(&#39;/chat&#39;).in(&#39;general&#39;).clients(function(error, clients){
+  if (error) throw error;
+  console.log(clients); // =&gt; [Anw2LatarvGVVXEIAAAD]
+});
+</code></pre>
+              <p>当不指定room,默认会获取所有连接到'/'的所有客户端ID列表(&#39;/&#39;):</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.clients(function(error, clients){
+  if (error) throw error;
+  console.log(clients); // =&gt; [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
+});
+</code></pre>
+              <h3 id="namespace-use-fn"><a class="icon-link deep-link" href="/docs/server-api/#namespace-use-fn" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>namespace.use(fn)</h3>
+              <ul>
+                <li><code>fn</code> <em>(Function)</em></li>
+              </ul>
+              <p>注册一个中间件(函数),注入到每个Socket请求,并且接收 socket和一个传递给下个中间件的可选函数</p>
+              <p>错误信息传给中间件的回调,作为一个错误信息传给客户端.</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.use(function(socket, next){
+  if (socket.request.headers.cookie) return next();
+  next(new Error(&#39;Authentication error&#39;));
+});
+</code></pre>
+              <h3 id="event-connect"><a class="icon-link deep-link" href="/docs/server-api/#event-connect" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
+                &#39;connect&#39;
+              </h3>
+              <ul>
+                <li><code>socket</code> <em>(Socket)</em> socket connection with client</li>
+              </ul>
+              <p>由客户端激活.</p>
+              <h3 id="event-connection"><a class="icon-link deep-link" href="/docs/server-api/#event-connection" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
+                &#39;connection&#39;
+              </h3>
+              <p>同义词：<a href="#event-connect">Event: &#39;connect&#39;</a>.</p>
+              <h3 id="flag-volatile"><a class="icon-link deep-link" href="/docs/server-api/#flag-volatile" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>标识:
+                &#39;volatile&#39;
+              </h3>
+              <p>设置一个附加标识给发送(激活)消息事件，来表明这个事件的数据可能会由于客户端没有准备好接收而丢失 (因为网络延时，或其他原因...比如Note7,又或者客户端是通过长轮询，而且正在 '请求-响应'周期中,如果客户端没有接收所有消息，客户端就不会做出响应).</p>
+              <pre><code class="lang-js">io.volatile.emit(&#39;an event&#39;, { some: &#39;data&#39; }); // the clients may or may not receive it
+</code></pre>
+              <h3 id="flag-local"><a class="icon-link deep-link" href="/docs/server-api/#flag-local" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Flag:
+                &#39;local&#39;
+              </h3>
+              <p>设置一个附加标识给发送(激活)事件，来表明这个事件的数据仅仅会被广播到当前的节点 <em>broadcast</em> to the current node (when the <a href="https://github.com/socketio/socket.io-redis">Redis adapter</a>                is used).</p>
+              <pre><code class="lang-js">io.local.emit(&#39;an event&#39;, { some: &#39;data&#39; });
+</code></pre>
+              <h2 id="socket">Socket</h2>
+              <p>A <code>Socket</code> 是与浏览器客户端交互的基本对象. 一个 <code>Socket</code> 属于一个确定的 <code>Namespace</code> (默认 <code>/</code>)
+                基于客户端来进行通信
+              </p>
+              <p>需要注意的是： <code>Socket</code> 不直接基于TCP/IP socket，而只是一个类名.</p>
+              <p>在每一个 <code>Namespace</code>内, 你可以随意定义频道(类似与电视台..) (常称为 <code>room</code>) , <code>Socket</code> 能够随时连接和断开连接.
+                这里提供了一个方便的方法来对频道内进行广播 (查看 <code>Socket#to</code> below).</p>
+              <h3 id="socket-id"><a class="icon-link deep-link" href="/docs/server-api/#socket-id" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.id</h3>
+              <ul>
+                <li><em>(String)</em></li>
+              </ul>
+              <p> 一个来自session会话的唯一标识, 来自于<code>Client</code>客户端.</p>
+              <h3 id="socket-rooms"><a class="icon-link deep-link" href="/docs/server-api/#socket-rooms" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.rooms</h3>
+              <ul>
+                <li><em>(Object)</em></li>
+              </ul>
+              <p>当前客户端进入频道(room)的hash标识，由room名称索引</p>
+              <h3 id="socket-client"><a class="icon-link deep-link" href="/docs/server-api/#socket-client" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.client</h3>
+              <ul>
+                <li><em>(Client)</em></li>
+              </ul>
+              <p>一个基于<code>Client</code>对象的引用.</p>
+              <h3 id="socket-conn"><a class="icon-link deep-link" href="/docs/server-api/#socket-conn" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.conn</h3>
+              <ul>
+                <li><em>(engine.Socket)</em></li>
+              </ul>
+              <p>一个基于 <code>Client</code> 传输连接的引用 (engine.io <code>Socket</code> object). 这样就可以访问IO传输层, 因为它依然保留(大部分)了实际的TCP/IP
+                socket 摘要.</p>
+              <h3 id="socket-request"><a class="icon-link deep-link" href="/docs/server-api/#socket-request" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.request</h3>
+              <ul>
+                <li><em>(Request)</em></li>
+              </ul>
+              <p> 由 engine.io Client发起的<code>request</code>的引用 . 常用于获取请求头信息，比如 <code>Cookie</code> 或者<code>User-Agent</code>.</p>
+              <h3 id="socket-use-fn"><a class="icon-link deep-link" href="/docs/server-api/#socket-use-fn" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.use(fn)</h3>
+              <ul>
+                <li><code>fn</code> <em>(Function)</em></li>
+              </ul>
+              <p>
+                <p>注册一个中间件(函数),注入到每个Socket请求,并且接收 socket和一个传递给下个中间件的可选函数</p>.</p>
+              <p>错误信息传给中间件的回调函数,作为一个错误信息传给客户端.</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.on(&#39;connection&#39;, function(socket){
+  socket.use(function(packet, next){
+    if (packet.doge === true) return next();
+    next(new Error(&#39;Not a doge error&#39;));
+  });
+});
+</code></pre>
+              <h3 id="socket-send-args-ack"><a class="icon-link deep-link" href="/docs/server-api/#socket-send-args-ack" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.send([...args][,
+                ack])
+              </h3>
+              <ul>
+                <li><code>args</code></li>
+                <li><code>ack</code> <em>(Function)</em></li>
+                <li><strong>Returns</strong> <code>Socket</code></li>
+              </ul>
+              <p>激活一个消息事件. 查看 <a href="#socket-emit-eventname-args-ack">socket.emit(eventName[, ...args][, ack])</a>.</p>
+              <h3 id="socket-emit-eventname-args-ack"><a class="icon-link deep-link" href="/docs/server-api/#socket-emit-eventname-args-ack" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.emit(eventName[,
+                ...args][, ack])</h3>
+              <ul>
+                <li><code>eventName</code> <em>(String)</em></li>
+                <li><code>args</code></li>
+                <li><code>ack</code> <em>(Function)</em></li>
+                <li><strong>Returns</strong> <code>Socket</code></li>
+              </ul>
+              <p>激活(发送)一个指定的事件，另外的参数也会被一同发送, 所有数据结构都能被支持，包括 <code>Buffer</code>.</p>
+              <pre><code class="lang-js">socket.emit(&#39;hello&#39;, &#39;world&#39;);
+socket.emit(&#39;with-binary&#39;, 1, &#39;2&#39;, { 3: &#39;4&#39;, 5: new Buffer(6) });
+</code></pre>
+              <p><code>ack</code> 是一个可选参数，当客户端响应时会被调用.</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.on(&#39;connection&#39;, function(client){
+  client.emit(&#39;an event&#39;, { some: &#39;data&#39; });
+
+  client.emit(&#39;ferret&#39;, &#39;tobi&#39;, function (data) {
+    console.log(data); // data will be &#39;woot&#39;
+  });
+
+  // the client code
+  // client.on(&#39;ferret&#39;, function (name, fn) {
+  //   fn(&#39;woot&#39;);
+  // });
+
+});
+</code></pre>
+              <h3 id="socket-on-eventname-callback"><a class="icon-link deep-link" href="/docs/server-api/#socket-on-eventname-callback" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.on(eventName,
+                callback)
+              </h3>
+              <ul>
+                <li><code>eventName</code> <em>(String)</em></li>
+                <li><code>callback</code> <em>(Function)</em></li>
+                <li><strong>Returns</strong> <code>Socket</code></li>
+              </ul>
+              <p>为指定的事件创建一个handler.</p>
+              <pre><code class="lang-js">socket.on(&#39;news&#39;, function (data) {
+  console.log(data);
+});
+</code></pre>
+              <h3 id="socket-join-room-callback"><a class="icon-link deep-link" href="/docs/server-api/#socket-join-room-callback" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.join(room[,
+                callback])
+              </h3>
+              <ul>
+                <li><code>room</code> <em>(String)</em></li>
+                <li><code>callback</code> <em>(Function)</em></li>
+                <li><strong>Returns</strong> <code>Socket</code> for chaining</li>
+              </ul>
+              <p>将某个客户端加入到 <code>room</code>, 可提供一个可选的回调带可选参数 <code>err</code>.
+              </p>
+              <pre><code class="lang-js">io.on(&#39;connection&#39;, function(socket){
+  socket.join(&#39;room 237&#39;, function(){
+    console.log(socket.rooms); // [ &lt;socket.id&gt;, &#39;room 237&#39; ]
+    io.to(&#39;room 237&#39;, &#39;a new user has joined the room&#39;); // broadcast to everyone in the room
+  });
+});
+</code></pre>
+              <p>加入room的机制是由 <code>Adapter</code> 配置的 (查看 <code>Server#adapter</code> above), 默认是 <a href="https://github.com/socketio/socket.io-adapter">socket.io-adapter</a>.</p>
+              <p>为了方便，每一个socket都在加入room是自动的被Id值标识了 (查看 <code>Socket#id</code>). 这就使得广播消息给room的其他人变得很方便:
+              </p>
+              <pre><code class="lang-js">io.on(&#39;connection&#39;, function(client){
+  client.on(&#39;say to someone&#39;, function(id, msg){
+    // send a private message to the socket with the given id
+    client.broadcast.to(id).emit(&#39;my message&#39;, msg);
+  });
+});
+</code></pre>
+              <h3 id="socket-join-rooms-callback"><a class="icon-link deep-link" href="/docs/server-api/#socket-join-rooms-callback" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.join(rooms[,
+                callback])
+              </h3>
+              <ul>
+                <li><code>rooms</code> <em>(Array)</em></li>
+                <li><code>callback</code> <em>(Function)</em></li>
+                <li><strong>Returns</strong> <code>Socket</code> for chaining</li>
+              </ul>
+              <p>把客户端用户加入到多个room里, 可提供一个可选的回调带可选参数 <code>err</code>.</p>
+              <h3 id="socket-leave-room-callback"><a class="icon-link deep-link" href="/docs/server-api/#socket-leave-room-callback" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.leave(room[,
+                callback])
+              </h3>
+              <ul>
+                <li><code>room</code> <em>(String)</em></li>
+                <li><code>callback</code> <em>(Function)</em></li>
+                <li><strong>Returns</strong> <code>Socket</code> for chaining</li>
+              </ul>
+              <p>从<code>room</code>移除用户, 可提供一个可选的回调带可选参数 <code>err</code>.</p>
+              <p><strong>断开连接后自动离开房间</strong>.</p>
+              <h3 id="socket-to-room"><a class="icon-link deep-link" href="/docs/server-api/#socket-to-room" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.to(room)</h3>
+              <ul>
+                <li><code>room</code> <em>(String)</em></li>
+                <li><strong>Returns</strong> <code>Socket</code> for chaining</li>
+              </ul>
+              <p>向指定的room发送(激活)指定事件，这个事件消息只有已经加入了这个room的人才能收到.</p>
+              <p>为了发送(激活)多个事件，你可以多次调用 <code>to</code>.</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.on(&#39;connection&#39;, function(client){
+  // to one room
+  client.to(&#39;others&#39;).emit(&#39;an event&#39;, { some: &#39;data&#39; });
+  // to multiple rooms
+  client.to(&#39;room1&#39;).to(&#39;room2&#39;).emit(&#39;hello&#39;);
+});
+</code></pre>
+              <h3 id="socket-in-room"><a class="icon-link deep-link" href="/docs/server-api/#socket-in-room" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.in(room)</h3>
+              <p>同义词： <a href="#sockettoroom">socket.to(room)</a>.</p>
+              <h3 id="socket-compress-value"><a class="icon-link deep-link" href="/docs/server-api/#socket-compress-value" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.compress(value)</h3>
+              <ul>
+                <li><code>value</code> <em>(Boolean)</em> whether to following packet will be compressed</li>
+                <li><strong>Returns</strong> <code>Socket</code> for chaining</li>
+              </ul>
+              <p>设置一个附加标识给发送(激活)事件，来表明这个事件的数据仅当value为true时会被压缩 <em>compressed</em>.默认 <code>true</code>.</p>
+              <h3 id="socket-disconnect-close"><a class="icon-link deep-link" href="/docs/server-api/#socket-disconnect-close" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>socket.disconnect(close)</h3>
+              <ul>
+                <li><code>close</code> <em>(Boolean)</em> whether to close the underlying connection</li>
+                <li><strong>Returns</strong> <code>Socket</code></li>
+              </ul>
+              <p>断开客户端连接. 如果 close的值为 <code>true</code> 断开当前基础的连接, 否则只是断开与当前namespace的连接.</p>
+              <h3 id="flag-broadcast"><a class="icon-link deep-link" href="/docs/server-api/#flag-broadcast" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Flag:
+                &#39;broadcast&#39;
+              </h3>
+              <p>设置一个附加标识给发送(激活)事件，来表明这个事件的数据会被广播到除了发送者的所有人.</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.on(&#39;connection&#39;, function(socket){
+  socket.broadcast.emit(&#39;an event&#39;, { some: &#39;data&#39; }); // everyone gets it but the sender
+});
+</code></pre>
+              <h3 id="flag-volatile-1"><a class="icon-link deep-link" href="/docs/server-api/#flag-volatile-1" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Flag:
+                &#39;volatile&#39;
+              </h3>
+              <p>设置一个附加标识给发送(激活)事件，来表明这个事件的数据可能会由于客户端没有准备好接收而丢失 (因为网络延时，或其他原因...比如Note7,又或者客户端是通过长轮询，而且正在 '请求-响应'周期中,如果客户端没有接收所有消息，客户端就不会做出响应)..</p>
+              <pre><code class="lang-js">var io = require(&#39;socket.io&#39;)();
+io.on(&#39;connection&#39;, function(socket){
+  socket.volatile.emit(&#39;an event&#39;, { some: &#39;data&#39; }); // the client may or may not receive it
+});
+</code></pre>
+              <h3 id="event-disconnect"><a class="icon-link deep-link" href="/docs/server-api/#event-disconnect" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
+                &#39;disconnect&#39;
+              </h3>
+              <ul>
+                <li><code>reason</code> <em>(String)</em> 断开连接的原因 (服务端和客户端都会收到)</li>
+              </ul>
+              <p>断开连接时被激活.</p>
+              <h3 id="event-error"><a class="icon-link deep-link" href="/docs/server-api/#event-error" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
+                &#39;error&#39;
+              </h3>
+              <ul>
+                <li><code>error</code> <em>(Object)</em> error object</li>
+              </ul>
+              <p>发生错误时被激活.</p>
+              <h3 id="event-disconnecting"><a class="icon-link deep-link" href="/docs/server-api/#event-disconnecting" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>Event:
+                &#39;disconnecting&#39;
+              </h3>
+              <ul>
+                <li><code>reason</code> <em>(String)</em> 断开连接的原因 (服务端和客户端都会收到)</li>
+              </ul>
+              <p>当客户端将要断开连接时激活 (当时仍然在当前的 <code>rooms</code>(频道/房间)).</p>
+              <p>还有一些保留的事件名称不可被定义使用(比如 <code>connect</code>, <code>newListener</code> and <code>removeListener</code>) .
+              </p>
+              <h2 id="client">Client</h2>
+              <p> <code>Client</code>代表了当前传输层的连接(engine.io). <code>Client</code>能被属于不同<code>Namespace</code>s的<code>Socket</code>s关联
+                .
+              </p>
+              <h3 id="client-conn"><a class="icon-link deep-link" href="/docs/server-api/#client-conn" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>client.conn</h3>
+              <ul>
+                <li><em>(engine.Socket)</em></li>
+              </ul>
+              <p> <code>engine.io</code> <code>Socket</code> 连接的引用.</p>
+              <h3 id="client-request"><a class="icon-link deep-link" href="/docs/server-api/#client-request" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>client.request</h3>
+              <ul>
+                <li><em>(Request)</em></li>
+              </ul>
+              <p> 由 engine.io Client发起的<code>request</code>的引用 . 常用于获取请求头信息，比如 <code>Cookie</code> 或者<code>User-Agent</code>.</p>
+
+            </div>
+            <!-- .entry-content -->
+          </article>
+          <!-- #post-## -->
+
+        </main>
+        <!-- #main -->
+      </div>
+      <!-- #primary -->
+
+    </div>
+    <!-- #content -->
+
+    <footer id="colophon" class="site-footer" role="contentinfo">
+      <div class="site-info">
+        <span class="footer-left">SOCKET.IO IS OPEN-SOURCE (MIT). RUN BY <a href="https://github.com/socketio/socket.io/graphs/contributors">CONTRIBUTORS</a>. </span>
+        <span class="footer-right">
+        <a href="https://twitter.com/socketio" class="twitter-follow-button" data-show-count="true" data-lang="en">Follow @socketio</a>
+      </span>
+      </div>
+      <!-- .site-info -->
+    </footer>
+    <!-- #colophon -->
+  </div>
+  <!-- #page -->
+
+  <script src="js/jquery-1.9.1.min.js"></script>
+  <script src="js/socket.io.min.js"></script>
+  <!-- Twitter script -->
+  <script>
+    !function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = "//platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");
+  </script>
+
+  <script src="js/default.min.js"></script>
+
+</body>
+
+</html>
