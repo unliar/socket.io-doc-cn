@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-site-verification" content="6hwSNwrfOBp3YhFBHWy08L12QeMTLpqNI3LvIB4lZEI" />
+  <title>Socket.IO — Docs</title>
+  <link href='css/1694e2ef04a74bedb7c48032102233b6.css' rel='stylesheet' type='text/css'>
+
+  <link rel='stylesheet' id='socket-io-website-style-css' href='css/style.css' type='text/css' media='all' />
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18488944-1']);
+    _gaq.push(['_trackPageview']);
+    (function () {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+</head>
+
+<body class="blog group-blog">
+  <div id="bar"></div>
+  <div id="page" class="hfeed site">
+
+    <header id="masthead" class="site-header" role="banner">
+      <div class="site-branding">
+        <h1 class="site-title">
+          <a href="/" rel="home"></a>
+        </h1>
+        <h2 class="site-description"></h2>
+      </div>
+
+      <nav id="site-navigation" class="main-navigation" role="navigation">
+        <div id="logo-container"><a href="/" id="logo">socket.io</a></div>
+        <div class="menu-menu-container">
+
+          <ul id="menu-menu" class="menu">
+            <li id="menu-item-6" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-6"><a href="/">首页</a></li>
+            <li id="menu-item-153" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-153"><a href="/demos/chat/">示例</a></li>
+            <li id="menu-item-30" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-30"><a href="/get-started">开始使用</a></li>
+            <li id="menu-item-29" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-29"><a href="/docs">文档</a></li>
+            <!-- <li id="menu-item-95" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-95"><a href="http://socket.io/blog/">Blog</a></li> -->
+            <li id="menu-item-43" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-43"><a href="https://cdnjs.com/libraries/socket.io">下载 v1.7.3</a></li>
+            <li id="menu-item-972" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-972"><a href="https://slackin-socketio.now.sh/">加入交流区</a></li>
+          </ul>
+        </div>
+        <iframe src="https://ghbtns.com/github-btn.html?user=socketio&repo=socket.io&type=watch&count=true" allowtransparency="true"
+          frameborder="0" scrolling="0" width="120" id="gh-watchers" height="20"></iframe>
+      </nav>
+      <!-- #site-navigation -->
+    </header>
+    <!-- #masthead -->
+
+    <div id="content" class="site-content">
+
+      <div class="sidebar" class="content-area">
+        <ul id="posts">
+          <li id="parent"><a href="/docs/">概览</a></li>
+          <li class="anchor"></li>
+          <li><a href="/docs/server-api/">服务端 API</a></li>
+          <li><a href="/docs/client-api/">客户端 API</a></li>
+          <li class="anchor"></li>
+          <li><a href="/docs/rooms-and-namespaces/">群组 和命名空间</a></li>
+          <li><a href="/docs/migrating-from-0-9/">从 0.9版本迁移</a></li>
+          <li><a href="/docs/using-multiple-nodes/">使用多个Node服务</a></li>
+          <li><a href="/docs/logging-and-debugging/">日志和Debug</a></li>
+          <li><a href="/docs/emit-cheatsheet/">发送消息示例</a></li>
+          <li><a href="/docs/faq/">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div id="primary" class="content-area with-sidebar">
+
+        <main id="main" class="site-main" role="main">
+
+          <article id="post-26" class="post-26 page type-page status-publish hentry">
+            <div class="entry-content">
+              <h1 id="how-to-use"><a class="icon-link deep-link" href="/docs/#how-to-use" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>使用指南</h1>
+              <h2 id="installing"><a class="icon-link deep-link" href="/docs/#installing" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>安装</h2>
+              <pre><code>
+$ npm install socket.io
+    </code></pre>
+              <h2 id="using-with-node-http-server"><a class="icon-link deep-link" href="/docs/#using-with-node-http-server" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>配合Node服务器使用</h2>
+              <div class="ezcol ezcol-one-half">
+                <h3>服务端 (app.js)</h3>
+                <pre><code>
+var app = require('http').createServer(handler)
+var io = require('socket.io')(app);
+var fs = require('fs');
+
+app.listen(80);
+
+function handler (req, res) {
+  fs.readFile(__dirname + '/index.html',
+  function (err, data) {
+    if (err) {
+      res.writeHead(500);
+      return res.end('Error loading index.html');
+    }
+
+    res.writeHead(200);
+    res.end(data);
+  });
+}
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
+      </code></pre>
+              </div>
+              <div class="ezcol ezcol-one-half ezcol-last">
+                <h3>客户端 (index.html)</h3>
+                <pre><code>
+&lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  var socket = io('http://localhost');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+&lt;/script&gt;
+      </code></pre>
+              </div>
+              <div class="ezcol-divider"></div>
+              <h2 id="using-with-express-3/4"><a class="icon-link deep-link" href="/docs/#using-with-express-3/4" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>使用Express
+                3/4
+              </h2>
+              <div class="ezcol ezcol-one-half">
+                <h3>服务端 (app.js)</h3>
+                <pre><code>
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+server.listen(80);
+
+app.get('/', function (req, res) {
+  res.sendfile(__dirname + '/index.html');
+});
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
+      </code></pre>
+              </div>
+              <div class="ezcol ezcol-one-half ezcol-last">
+                <h3>客户端 (index.html)</h3>
+                <pre><code>
+&lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  var socket = io.connect('http://localhost');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+&lt;/script&gt;
+      </code></pre>
+              </div>
+              <div class="ezcol-divider"></div>
+              <h2 id="using-with-the-express-framework"><a class="icon-link deep-link" href="/docs/#using-with-the-express-framework" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>使用Express
+                2.x
+              </h2>
+              <div class="ezcol ezcol-one-half">
+                <h3>服务端 (app.js)</h3>
+                <pre><code>
+var app = require('express').createServer();
+var io = require('socket.io')(app);
+
+app.listen(80);
+
+app.get('/', function (req, res) {
+  res.sendfile(__dirname + '/index.html');
+});
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
+      </code></pre>
+              </div>
+              <div class="ezcol ezcol-one-half ezcol-last">
+                <h3>客户端 (index.html)</h3>
+                <pre><code>
+&lt;script src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  var socket = io.connect('http://localhost');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+&lt;/script&gt;
+      </code></pre>
+              </div>
+              <div class="ezcol-divider"></div>
+              <h2 id="sending-and-receiving-events"><a class="icon-link deep-link" href="/docs/#sending-and-receiving-events" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>发送以及响应事件</h2>
+              <p>Socket.IO 允许你发送以及响应你定制的事件. 除了 <code>connect</code>, <code>message</code> and <code>disconnect</code>, 你可以发送你定制的事件:
+              </p>
+              <h3>Server</h3>
+              <pre><code>
+// 注意, io(&lt;port&gt;) 会为你创建一个HTTP 服务器。
+var io = require('socket.io')(80);
+
+io.on('connection', function (socket) {
+  io.emit('this', { will: '所有人都会看见这个消息'});
+
+  socket.on('private message', function (from, msg) {
+    console.log('收到一个消息，来自： ', from, ' saying ', msg);
+  });
+
+  socket.on('disconnect', function () {
+    io.emit('用户断开链接');
+  });
+});
+      </code></pre>
+              <h2 id="restricting-yourself-to-a-namespace"><a class="icon-link deep-link" href="/docs/#restricting-yourself-to-a-namespace" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>约定一个命名空间</h2>
+              <p>如果你有完全的socket.io的消息发送以及响应的权限，你可以使用默认的'/'作为命名空间。如果你想利用第三方代码，或者想和他人分享你的代码，socket.io提供了一个命名socket的方式</p>
+              <p>这样可以便于复用单个连接. 而不是使用两个Websocket连接</code>.</p>
+              <div class="ezcol ezcol-one-half">
+                <h3>服务端 (app.js)</h3>
+                <pre><code>
+var io = require('socket.io')(80);
+var chat = io
+  .of('/chat')
+  .on('connection', function (socket) {
+    socket.emit('a message', {
+        that: 'only'
+      , '/chat': 'will get'
+    });
+    chat.emit('a message', {
+        everyone: 'in'
+      , '/chat': 'will get'
+    });
+  });
+
+var news = io
+  .of('/news')
+  .on('connection', function (socket) {
+    socket.emit('item', { news: 'item' });
+  });
+      </code></pre>
+              </div>
+              <div class="ezcol ezcol-one-half ezcol-last">
+                <h3>客户端 (index.html)</h3>
+                <pre><code>
+&lt;script&gt;
+  var chat = io.connect('http://localhost/chat')
+    , news = io.connect('http://localhost/news');
+  
+  chat.on('connect', function () {
+    chat.emit('hi!');
+  });
+  
+  news.on('news', function () {
+    news.emit('woot');
+  });
+&lt;/script&gt;
+      </code></pre>
+              </div>
+              <div class="ezcol-divider"></div>
+              <h2 id="sending-volatile-messages"><a class="icon-link deep-link" href="/docs/#sending-volatile-messages" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>发送易变的数据(volatile)</h2>
+              <p>有时，一些消息会被丢失. 比如你的app会对某个关键词比如 <code>bieber</code> 响应一个确定的数据.</p>
+              <p>如果一个客户端并没有准备好接受来自服务器的消息,(因为网络延时，或其他原因...比如Note7,又或者客户端是通过长轮询，而且正在 '请求-响应'周期中,如果客户端没有接收所有关于<code>bieber</code>的消息，客户端就不会做出响应)</p>
+              <p>这种情况下你可能需要把信息当成易变的数据(volatile).</p>
+              <h3>Server</h3>
+              <pre><code>
+var io = require('socket.io')(80);
+
+io.on('connection', function (socket) {
+  var tweets = setInterval(function () {
+    getBieberTweet(function (tweet) {
+      socket.volatile.emit('bieber tweet', tweet);
+    });
+  }, 100);
+
+  socket.on('disconnect', function () {
+    clearInterval(tweets);
+  });
+});
+    </code></pre>
+              <h2 id="sending-and-getting-data-(acknowledgements)"><a class="icon-link deep-link" href="/docs/#sending-and-getting-data-(acknowledgements)" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>发送和接收数据
+                (确认：acknowledgements)
+              </h2>
+              <p>有时候，当客户端确定收到消息之后，你可能需要拿到一个回调.</p>
+              <p>你可以提供一个函数作为<code>.send</code> or <code>.emit</code>的最后一个参数来实现这个功能.此外，当你用<code>.emit</code>你也可以用这个回调来传递数据</p>
+              <div class="ezcol ezcol-one-half">
+                <h3>Server (app.js)</h3>
+                <pre><code>
+var io = require('socket.io')(80);
+
+io.on('connection', function (socket) {
+  socket.on('ferret', function (name, fn) {
+    fn('woot');//来自服务端函数使用客户端传回来的数据
+  });
+});
+      </code></pre>
+              </div>
+              <div class="ezcol ezcol-one-half ezcol-last">
+                <h3>Client (index.html)</h3>
+                <pre><code>
+&lt;script&gt;
+  var socket = io(); // TIP: io() with no args does auto-discovery
+  socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
+    socket.emit('ferret', 'tobi', function (data) {
+      console.log(data); // 数据会被传到服务端
+    });
+  });
+&lt;/script&gt;
+      </code></pre>
+              </div>
+              <div class="ezcol-divider"></div>
+              <h2 id="broadcasting-messages"><a class="icon-link deep-link" href="/docs/#broadcasting-messages" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>广播信息
+              </h2>
+              <p>为了广播信息, 简单的加上 <code>broadcast</code> 标志给 <code>emit</code> and <code>send</code> . 广播信息会发送所有消息给每个人，除了发送者本身.</p>
+              <h3>服务端</h3>
+              <pre><code>
+var io = require('socket.io')(80);
+
+io.on('connection', function (socket) {
+  socket.broadcast.emit('用户连接~~~');
+});
+    </code></pre>
+              <h2 id="using-it-just-as-a-cross-browser-websocket"><a class="icon-link deep-link" href="/docs/#using-it-just-as-a-cross-browser-websocket" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>把socket.io当成以跨浏览器的Websocket.
+              </h2>
+              <p>如果你只想使用Websocket, 你可以只使用 <code>send</code> and 监听 <code>message</code> 事件:</p>
+              <div class="ezcol ezcol-one-half">
+                <h3>服务端 (app.js)</h3>
+                <pre><code>
+var io = require('socket.io')(80);
+
+io.on('connection', function (socket) {
+  socket.on('message', function () { });
+  socket.on('disconnect', function () { });
+});
+      </code></pre>
+              </div>
+              <div class="ezcol ezcol-one-half ezcol-last">
+                <h3>客户端 (index.html)</h3>
+                <pre><code>
+&lt;script&gt;
+  var socket = io('http://localhost/');
+  socket.on('connect', function () {
+    socket.send('hi');
+
+    socket.on('message', function (msg) {
+      // my msg
+    });
+  });
+&lt;/script&gt;
+      </code></pre>
+              </div>
+              <div class="ezcol-divider"></div>
+              <p>如果你不需要重连等相关逻辑, 可以瞧瞧 <a href="https://github.com/socketio/engine.io">Engine.IO</a>, 简约版的socket.io.
+              </p>
+            </div>
+            <!-- .entry-content -->
+            <footer class="entry-footer">
+            </footer>
+            <!-- .entry-footer -->
+          </article>
+          <!-- #post-## -->
+
+        </main>
+        <!-- #main -->
+      </div>
+      <!-- #primary -->
+
+    </div>
+    <!-- #content -->
+
+    <footer id="colophon" class="site-footer" role="contentinfo">
+      <div class="site-info">
+        <span class="footer-left">SOCKET.IO IS OPEN-SOURCE (MIT). RUN BY <a href="https://github.com/socketio/socket.io/graphs/contributors">CONTRIBUTORS</a>. </span>
+        <span class="footer-left">远浅,翻译于2017-4-8 <a href="https://github.com/unliar">github</a>. 原版内容来自<a href="https://socket.io/docs/">socket.io</a></span>
+        <span class="footer-right">
+        <a href="https://twitter.com/socketio" class="twitter-follow-button" data-show-count="true" data-lang="en">Follow @socketio</a>
+      </span>
+      </div>
+      <!-- .site-info -->
+    </footer>
+    <!-- #colophon -->
+  </div>
+  <!-- #page -->
+
+  <script src="js/jquery-1.9.1.min.js"></script>
+  <script src="js/socket.io.min.js"></script>
+  <!-- Twitter script -->
+  <script>
+    !function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = "//platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");
+  </script>
+
+  <script src="js/default.min.js"></script>
+
+</body>
+
+</html>
