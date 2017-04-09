@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Socket.IO — Emit cheatsheet</title>
+  <link href='css/54a91272acff4344bad32f6c7773a4f4.css' rel='stylesheet' type='text/css'>
+
+  <link rel='stylesheet' id='socket-io-website-style-css' href='css/style.css' type='text/css' media='all' />
+
+
+
+</head>
+
+<body class="blog group-blog">
+  <div id="bar"></div>
+  <div id="page" class="hfeed site">
+
+    <header id="masthead" class="site-header" role="banner">
+      <div class="site-branding">
+        <h1 class="site-title">
+          <a href="/" rel="home"></a>
+        </h1>
+        <h2 class="site-description"></h2>
+      </div>
+
+      <nav id="site-navigation" class="main-navigation" role="navigation">
+        <div id="logo-container"><a href="index.html" id="logo">socket.io</a></div>
+        <div class="menu-menu-container">
+
+          <ul id="menu-menu" class="menu">
+            <li id="menu-item-6" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-6"><a href="index.html">首页</a></li>
+            <li id="menu-item-30" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-30"><a href="index.html">开始使用</a></li>
+            <!-- <li id="menu-item-95" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-95"><a href="http://socket.io/blog/">Blog</a></li> -->
+            <li id="menu-item-43" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-43"><a <li id="menu-item-972" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-972"><a href="https://github.com/unliar/socket.io-doc-cn">给个star</a></li>
+          </ul>
+        </div>
+
+      </nav>
+      <!-- #site-navigation -->
+    </header>
+    <!-- #masthead -->
+
+    <div id="content" class="site-content">
+
+      <div class="sidebar" class="content-area">
+        <ul id="posts">
+          <li id="parent"><a href="../">概览</a></li>
+          <li class="anchor"></li>
+          <li><a href="../server-api/">服务端 API</a></li>
+          <li><a href="../client-api/">客户端 API</a></li>
+          <li class="anchor"></li>
+          <li><a href="../rooms-and-namespaces/">群组 和命名空间</a></li>
+          <li><a href="../using-multiple-nodes/">使用多个Node服务</a></li>
+          <li><a href="../logging-and-debugging/">日志和Debug</a></li>
+          <li><a href="../emit-cheatsheet/">发送消息示例</a></li>
+
+        </ul>
+      </div>
+
+      <div id="primary" class="content-area with-sidebar">
+
+        <main id="main" class="site-main" role="main">
+
+          <article id="post-102" class="post-102 page type-page status-publish hentry">
+            <div class="entry-content">
+              <h1>发送消息示例</h1>
+              <P>翻译的时候可能把发送消息翻译成，发射消息事件，激活消息事件.....自行脑补</P>
+              <pre><code class="lang-js">
+io.on(&#39;connect&#39;, onConnect);
+
+function onConnect(socket){
+
+  // 发送给客户端一个hello消息事件
+  socket.emit(&#39;hello&#39;, &#39;can you hear me?&#39;, 1, 2, &#39;abc&#39;);
+
+  // 广播消息给所有已连接成员（除了发送者本人）
+  socket.broadcast.emit(&#39;broadcast&#39;, &#39;hello friends!&#39;);
+
+  // 广播消息给连接到'game'房间（频道/群组）的所有成员（除了发送者本人）
+  socket.to(&#39;game&#39;).emit(&#39;nice game&#39;, &quot;let&#39;s play a game&quot;);
+
+  // 广播消息给两个房间的成员(除了本人)
+  socket.to(&#39;game1&#39;).to(&#39;game2&#39;).emit(&#39;nice game&#39;, &quot;let&#39;s play a game (too)&quot;);
+
+  // 广播消息给房间的所有人(包括发送者)
+  io.in(&#39;game&#39;).emit(&#39;big-announcement&#39;, &#39;the game will start soon&#39;);
+
+  // 广播消息给命名空间myNamespace的所有人(包括发送者)
+  io.of(&#39;myNamespace&#39;).emit(&#39;bigger-announcement&#39;, &#39;the tournament will start soon&#39;);
+
+  // 发送消息给指定的socketid (私人消息)
+  socket.to(&lt;socketid&gt;).emit(&#39;hey&#39;, &#39;I just met you&#39;);
+
+  // 发送一个带有回调函数的消息（用于确认）
+  socket.emit(&#39;question&#39;, &#39;do you think so?&#39;, function (answer) {});
+
+  // 发送一个不经压缩的消息
+  socket.compress(false).emit(&#39;uncompressed&#39;, &quot;that&#39;s rough&quot;);
+
+  // 发送一个可能被客户端丢失的消息
+  socket.volatile.emit(&#39;maybe&#39;, &#39;do you really need it?&#39;);
+
+  // 对当前node服务器的客户端成员发送消息 (当使用多个Node服务器时)
+  io.local.emit(&#39;hi&#39;, &#39;my lovely babies&#39;);
+
+};
+</code></pre>
+              <p><strong>注意:</strong> 下面的事件不应该被用于命名消息事件:</p>
+              <ul>
+                <li><code>error</code></li>
+                <li><code>connect</code></li>
+                <li><code>disconnect</code></li>
+                <li><code>disconnecting</code></li>
+                <li><code>newListener</code></li>
+                <li><code>removeListener</code></li>
+                <li><code>ping</code></li>
+                <li><code>pong</code></li>
+              </ul>
+
+            </div>
+            <!-- .entry-content -->
+          </article>
+          <!-- #post-## -->
+
+        </main>
+        <!-- #main -->
+      </div>
+      <!-- #primary -->
+
+    </div>
+    <!-- #content -->
+
+    <footer id="colophon" class="site-footer" role="contentinfo">
+      <div class="site-info">
+        <span class="footer-left">SOCKET.IO IS OPEN-SOURCE (MIT). RUN BY <a href="https://github.com/socketio/socket.io/graphs/contributors">CONTRIBUTORS</a>. </span>
+        <span class="footer-right">
+        <a href="https://twitter.com/socketio" class="twitter-follow-button" data-show-count="true" data-lang="en">Follow @socketio</a>
+      </span>
+      </div>
+      <!-- .site-info -->
+    </footer>
+    <!-- #colophon -->
+  </div>
+  <!-- #page -->
+
+  <script src="js/jquery-1.9.1.min.js"></script>
+  <script src="js/socket.io.min.js"></script>
+  <!-- Twitter script -->
+  <script>
+    !function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = "//platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");
+  </script>
+
+  <script src="js/default.min.js"></script>
+
+</body>
+
+</html>
