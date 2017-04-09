@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Socket.IO — Rooms and Namespaces</title>
+  <link href='css/e875911339c14effb824b7b8fb44684e.css' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' id='socket-io-website-style-css' href='css/style_1.css' type='text/css' media='all' />
+</head>
+
+<body class="blog group-blog">
+  <div id="bar"></div>
+  <div id="page" class="hfeed site">
+
+    <header id="masthead" class="site-header" role="banner">
+      <div class="site-branding">
+        <h1 class="site-title">
+          <a href="../" rel="home"></a>
+        </h1>
+        <h2 class="site-description"></h2>
+      </div>
+
+      <nav id="site-navigation" class="main-navigation" role="navigation">
+        <div id="logo-container"><a href="index.html" id="logo">socket.io</a></div>
+        <div class="menu-menu-container">
+
+          <ul id="menu-menu" class="menu">
+            <li id="menu-item-6" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-6"><a href="index.html">首页</a></li>
+            <li id="menu-item-30" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-30"><a href="index.html">开始使用</a></li>
+            <!-- <li id="menu-item-95" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-95"><a href="http://socket.io/blog/">Blog</a></li> -->
+            <li id="menu-item-43" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-43"><a <li id="menu-item-972" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-972"><a href="https://github.com/unliar/socket.io-doc-cn">给个star</a></li>
+          </ul>
+        </div>
+
+      </nav>
+      <!-- #site-navigation -->
+    </header>
+    <!-- #masthead -->
+
+    <div id="content" class="site-content">
+
+      <div class="sidebar" class="content-area">
+        <ul id="posts">
+          <li id="parent"><a href="index.html">概览</a></li>
+          <li class="anchor"></li>
+          <li><a href="server-api/">服务端 API</a></li>
+          <li><a href="client-api/">客户端 API</a></li>
+          <li class="anchor"></li>
+          <li><a href="./rooms-and-namespaces">群组 和命名空间</a></li>
+          <li><a href="./migrating-from-0-9">从 0.9版本迁移</a></li>
+          <li><a href="./using-multiple-nodes">使用多个Node服务</a></li>
+          <li><a href="./logging-and-debugging">日志和Debug</a></li>
+          <li><a href="./emit-cheatsheet/">发送消息示例</a></li>
+          <li><a href="./faq/">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div id="primary" class="content-area with-sidebar">
+
+        <main id="main" class="site-main" role="main">
+
+          <article id="post-98" class="post-98 page type-page status-publish hentry">
+            <div class="entry-content">
+              <h1 id="namespaces"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#namespaces" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>命名空间(Namespaces)</h1>
+              <p>Socket.IO 允许你'命名'你的socket, 本质上是指定不同的端点或者路径</p>
+              <p>这是一个很有用的特性,可以有效减少TCP的连接数量，分离应用内通讯频道.</p>
+              <h2 id="default-namespace"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#default-namespace" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>默认命名空间
+              </h2>
+              <p>默认的命名空间是 <code>/</code> 它是客户端命名空间Socket.io的默认值，也是服务端命名空间的默认值.</p>
+              <p> <code>io.sockets</code> 可以简写成 <code>io</code>:</p>
+              <pre><code>// 下面两个连接都会发送到'/'下所有sockets 
+io.sockets.emit('hi', 'everyone');
+io.emit('hi', 'everyone'); // short form</code></pre>
+              <p>每一个命名空间发送(激活)一个connection事件，并且接收一个Socket作为函数的参数</p>
+              <pre><code>io.on('connection', function(socket){
+  socket.on('disconnect', function(){ });
+});</code></pre>
+              <h2 id="custom-namespaces"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#custom-namespaces" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>定义命名空间
+              </h2>
+              <p>为了定义一个命名空间,你可以在服务端使用 <code>of</code> 函数:</p>
+              <pre><code>var nsp = io.of('/my-namespace');
+nsp.on('connection', function(socket){
+  console.log('someone connected');
+});
+nsp.emit('hi', 'everyone!');</code></pre>
+              <p>而在客户端，你可以指定连接到某个命名空间:</p>
+              <pre><code>var socket = io('/my-namespace');</code></pre>
+              <p><strong>注意事项:</strong> 命名空间是一个Socket.io协议实现细节，不和底层传输的URL有关，默认是<code>/socket.io/…</code>.</p>
+              <h1 id="rooms"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#rooms" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>(房间)Rooms</h1>
+              <p>每一个命名空间里，你可以随意定义房间,sockets连接能够 <code>join</code> 和 <code>leave</code>.</p>
+              <h2 id="joining-and-leaving"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#joining-and-leaving" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>加入和退出</h2>
+              <p>你可以调用 <code>join</code>订阅给定的房间:</p>
+              <pre><code>io.on('connection', function(socket){
+  socket.join('some room');
+});</code></pre>
+              <p>你就可以用 <code>to</code> 或者 <code>in</code> (等价) 广播或者发送消息/事件:</p>
+              <pre><code>io.to('some room').emit('some event');</code></pre>
+              <p>你可以使用<code>leave</code>以相同的方式退出给定的房间 .</p>
+              <h2 id="default-room"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#default-room" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>默认房间
+              </h2>
+              <p>每个Socket.IO的<code>Socket</code>都会被一个随机的,不可预测，且独一无二的<code>Socket#id</code>标识. 为了方便，每个socket会在加入时自动被标识.
+              </p>
+              <p>这就使得向其他sockets广播消息变得很简单:</p>
+              <pre><code>io.on('connection', function(socket){
+  socket.on('say to someone', function(id, msg){
+    socket.broadcast.to(id).emit('my message', msg);
+  });
+});</code></pre>
+              <h2 id="disconnection"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#disconnection" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>断开连接</h2>
+              <p>一旦断开连接, sockets 会自动退出所在的房间，并不需要你特意操作.</p>
+              <h1 id="sending-messages-from-the-outside-world"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#sending-messages-from-the-outside-world" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>从房间或者命名空间外向内层发送消息</h1>
+              <p>在某些情况下，你可能需要从Socket.IO 的命名空间或者房间外的主进程发送消息(类似于全频段广播) .</p>
+              <p>有几种方式可以解决这个问题，比如从你的频道（房间）向主进程发送消息.</p>
+              <p>为了方便这种情况下的操作，我们创建了两个模块:</p>
+              <ul>
+                <li><a href="https://github.com/socketio/socket.io-redis">socket.io-redis</a></li>
+                <li><a href="https://github.com/socketio/socket.io-emitter">socket.io-emitter</a></li>
+              </ul>
+              <p>使用 Redis <code>Adapter</code>来实现:</p>
+              <pre><code>var io = require('socket.io')(3000);
+var redis = require('socket.io-redis');
+io.adapter(redis({ host: 'localhost', port: 6379 }));</code></pre>
+              <p>然后你就从任意频道(房间)发送消息</p>
+              <pre><code>var io = require('socket.io-emitter')({ host: '127.0.0.1', port: 6379 });
+setInterval(function(){
+  io.emit('time', new Date);
+}, 5000);</code></pre>
+            </div>
+            <!-- .entry-content -->
+            <footer class="entry-footer">
+            </footer>
+            <!-- .entry-footer -->
+          </article>
+          <!-- #post-## -->
+
+        </main>
+        <!-- #main -->
+      </div>
+      <!-- #primary -->
+
+    </div>
+    <!-- #content -->
+
+    <footer id="colophon" class="site-footer" role="contentinfo">
+      <div class="site-info">
+        <span class="footer-left">SOCKET.IO IS OPEN-SOURCE (MIT). RUN BY <a href="https://github.com/socketio/socket.io/graphs/contributors">CONTRIBUTORS</a>. </span>
+        <span class="footer-right">
+        <a href="https://twitter.com/socketio" class="twitter-follow-button" data-show-count="true" data-lang="en">Follow @socketio</a>
+      </span>
+      </div>
+      <!-- .site-info -->
+    </footer>
+    <!-- #colophon -->
+  </div>
+  <!-- #page -->
+
+  <script src="js/jquery-1.9.1.min.js"></script>
+  <script src="js/socket.io.min.js"></script>
+  <!-- Twitter script -->
+  <script>
+    !function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = "//platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");
+  </script>
+
+  <script src="js/default.min.js"></script>
+
+</body>
+
+</html>
