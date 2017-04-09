@@ -44,15 +44,14 @@
         <ul id="posts">
           <li id="parent"><a href="index.html">概览</a></li>
           <li class="anchor"></li>
-          <li><a href="server-api/">服务端 API</a></li>
-          <li><a href="client-api/">客户端 API</a></li>
+          <li><a href="../server-api/">服务端 API</a></li>
+          <li><a href="../client-api/">客户端 API</a></li>
           <li class="anchor"></li>
-          <li><a href="./rooms-and-namespaces">群组 和命名空间</a></li>
-          <li><a href="./migrating-from-0-9">从 0.9版本迁移</a></li>
-          <li><a href="./using-multiple-nodes">使用多个Node服务</a></li>
-          <li><a href="./logging-and-debugging">日志和Debug</a></li>
-          <li><a href="./emit-cheatsheet/">发送消息示例</a></li>
-          <li><a href="./faq/">FAQ</a></li>
+          <li><a href="../rooms-and-namespaces/">群组 和命名空间</a></li>
+          <li><a href="../using-multiple-nodes/">使用多个Node服务</a></li>
+          <li><a href="../logging-and-debugging/">日志和Debug</a></li>
+          <li><a href="../emit-cheatsheet/">发送消息示例</a></li>
+
         </ul>
       </div>
 
@@ -87,7 +86,7 @@ nsp.emit('hi', 'everyone!');</code></pre>
               <p>而在客户端，你可以指定连接到某个命名空间:</p>
               <pre><code>var socket = io('/my-namespace');</code></pre>
               <p><strong>注意事项:</strong> 命名空间是一个Socket.io协议实现细节，不和底层传输的URL有关，默认是<code>/socket.io/…</code>.</p>
-              <h1 id="rooms"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#rooms" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>(房间)Rooms</h1>
+              <h1 id="rooms"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#rooms" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>(房间/频道/群组)Rooms</h1>
               <p>每一个命名空间里，你可以随意定义房间,sockets连接能够 <code>join</code> 和 <code>leave</code>.</p>
               <h2 id="joining-and-leaving"><a class="icon-link deep-link" href="/docs/rooms-and-namespaces/#joining-and-leaving" style="position: absolute; margin-left: -18px; text-decoration: none; color: #999;">#</a>加入和退出</h2>
               <p>你可以调用 <code>join</code>订阅给定的房间:</p>
