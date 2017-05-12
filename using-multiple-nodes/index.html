@@ -74,7 +74,7 @@
                             <p>
                                 一个简单的解决方式就是基于他们的起始地址路由客户端，下面是一个用nginx的例子 :</p>
                             <h2>NginX 配置</h2>
-                            <p>在你的<code>nginx.conf</code>文件下的 <code>http { }</code> 内, you can declare a <code>upstream</code> section with a list of Socket.IO process you want to balance load between:</p>
+                            <p>在你的<code>nginx.conf</code>文件下的 <code>http { }</code> 内, 你可以声明一个包含你想要加入负载均衡的Socket.IO进程的<code>upstream</code>项:</p>
                             <pre><code>upstream io_nodes {
   ip_hash;
   server 127.0.0.1:6001;
@@ -82,9 +82,9 @@
   server 127.0.0.1:6003;
   server 127.0.0.1:6004;
 }</code></pre>
-                            <p>Notice the <code>ip_hash</code> instruction that indicates the connections will be sticky.</p>
-                            <p>In the same <code>http { }</code> section, you can declare a <code>server { }</code> that points to this upstream. In order for NginX to support and forward the <code>WebSocket</code> protocol, we explicitly pass along the
-                                required <code>Upgrade</code> headers:</p>
+                            <p>注意 <code>ip_hash</code> 指令表明连接会是粘性的.</p>
+                            <p>在同一个 <code>http { }</code> 配置项内, 你可以声明一个 <code>server { }</code>指向设置的upstream. 为了让NginX支持并升级到最新的WebSocket协议,
+                                我们明确的传了一个 <code>Upgrade</code> headers:</p>
                             <pre><code>server {
   listen 3000;
   server_name io.yourhost.com;
@@ -97,20 +97,22 @@
     proxy_pass http://io_nodes;
   }
 }</code></pre>
-                            <p>Make sure you also configure <code>worker_processes</code> in the topmost level to indicate how many workers NginX should use. You might also want to look into tweaking the <code>worker_connections</code> setting within the
-                                <code>events { }</code> block.</p>
-                            <h2>Using Node.JS Cluster</h2>
-                            <p>Just like NginX, Node.JS comes with built-in clustering support through the <code>cluster</code> module.</p>
-                            <p>Fedor Indutny has created a module called <a href="https://github.com/indutny/sticky-session">sticky session</a> that ensures file descriptors (ie: connections) are routed based on the originating <code>remoteAddress</code>                                (ie: IP).</p>
-                            <h2>Passing events between nodes</h2>
-                            <p>Now that you have multiple Socket.IO nodes accepting connections, if you want to broadcast events to everyone (or even everyone in a certain <a href="/docs/rooms-and-namespaces/">room</a>) you&#8217;ll need some way of passing
-                                messages between processes or computers.</p>
-                            <p>The interface in charge of routing messages is what we call the <code>Adapter</code>. You can implement your own on top of the <a href="https://github.com/socketio/socket.io-adapter">socket.io-adapter</a> (by inheriting from
-                                it) or you can use the one we provide on top of <a href="https://redis.io/">Redis</a>: <a href="https://github.com/socketio/socket.io-redis">socket.io-redis</a>:</p>
+                            <p>你也可以在Ngnix的顶层配置上配置<code>worker_processes</code>来表明你会用多少个进程进行负载均衡. 你也许会调整<code>events { }</code>内的
+                                <code>worker_connections</code> 配置.</p>
+                            <h2>使用 Node.JS 集群</h2>
+                            <p>和NginX一样,Node内置了集群模块.</p>
+                            <p>Fedor Indutny 创建了一个叫 <a href="https://github.com/indutny/sticky-session">sticky session</a>的模块用来确保连接是基于初始远程地址Ip地址.</p>
+                            <h2>在多个Node进程中传递事件</h2>
+                            <p>现在，你有了多个Socket.IO Node服务器来接收连接。如果你广播一个事件给每个人(活着在一个确定的群聊<a href="/docs/rooms-and-namespaces/">room</a>中),你会需要一些方法，在不同进程或者不同电脑间传递消息。
+                                .
+                            </p>
+                            <p>负责路由各种消息的接口就是Adapter.你可以在<a href="https://github.com/socketio/socket.io-adapter">socket.io-adapter</a>(通过继承)上执行你自己的
+                                Adapter,或者用 我们提供的 <a href="https://redis.io/">Redis</a>:
+                                <a href="https://github.com/socketio/socket.io-redis">socket.io-redis</a>:</p>
                             <pre><code>var io = require('socket.io')(3000);
 var redis = require('socket.io-redis');
 io.adapter(redis({ host: 'localhost', port: 6379 }));</code></pre>
-                            <p>If you want to pass messages to it from non-socket.io processes, you should look into <a href="/docs/rooms-and-namespaces/#sending-messages-from-the-outside-world">&#8220;Sending messages from the outside-world&#8221;</a>.</p>
+                            <p>如果你想在非socket.io的进程中发送消息，你可以去看看<a href="/docs/rooms-and-namespaces/#sending-messages-from-the-outside-world">&#8220;Sending messages from the outside-world&#8221;</a>.</p>
                         </div>
                         <!-- .entry-content -->
                         <footer class="entry-footer">
@@ -144,7 +146,7 @@ io.adapter(redis({ host: 'localhost', port: 6379 }));</code></pre>
     <script src="js/socket.io.min.js"></script>
     <!-- Twitter script -->
     <script>
-        ! function(d, s, id) {
+        ! function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (!d.getElementById(id)) {
                 js = d.createElement(s);
